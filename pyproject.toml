@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "from-csv-to-db"
+version = "0.1.0"
+description = ""
+authors = ["maciej88"]
+readme = "README.md"
+packages = [{include = "from_csv_to_db"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+alembic = "^1.11.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
