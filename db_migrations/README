@@ -1,1 +1,2 @@
-Generic single-database configuration.
+upgrade: create table (name in file name) or table relation
+downgrade: drop table with all data in it (by table name)
