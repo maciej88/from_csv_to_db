@@ -1,7 +1,10 @@
+import os
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+from dotenv import load_dotenv
+from loguru import logger
 
 from alembic import context
 
@@ -25,6 +28,14 @@ target_metadata = None
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+load_dotenv()
+url = os.getenv("DATABASE_URL", None)
+if url:
+    config.set_main_option("sqlalchemy.url", url)
+else:
+    logger.error("DATABASE_URL is not specified.")
+    logger.info("Try creating environmental variable or use .env.example.")
+    exit(1)
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
