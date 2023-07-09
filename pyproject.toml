@@ -9,6 +9,9 @@ packages = [{include = "from_csv_to_db"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 alembic = "^1.11.1"
+python-dotenv = "^1.0.0"
+loguru = "^0.7.0"
+psycopg2-binary = "^2.9.6"
 
 
 [build-system]
