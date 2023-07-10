@@ -23,11 +23,11 @@ def upgrade() -> None:
     create table movies(
         movie_id serial primary key,
         title text
-    )
+    );
     """)
 
 
 def downgrade() -> None:
     op.execute("""
-    drop table movies
+    drop table movies;
     """)
