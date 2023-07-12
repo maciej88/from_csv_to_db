@@ -1,14 +1,21 @@
 from dataclasses import dataclass
 
+"""
+Models to serialize data for import tools and serialize data.
+"""
+
+
 @dataclass
 class Movie:
     movie_id: int
     title: str
 
+
 @dataclass
 class Actor:
     actor_id: int
     name: str
+
 
 @dataclass
 class MovieActor:
