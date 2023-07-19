@@ -26,3 +26,15 @@ class MovieActor:
     character: str
     gender: int
     order_: int
+
+
+@dataclass(frozen=True)
+class CastEntry:
+    movie_index: int  # dodane... rząd w csv-ie
+    cast_id: int
+    character: str
+    credit_id: str
+    gender: int
+    id: int  # id of ... the actor?
+    name: str
+    order: int
