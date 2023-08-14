@@ -30,7 +30,7 @@ class MovieActor:
     credit_id: str
     character: str
     gender: int
-    order_: int
+    position: int
 
 
 @dataclass(frozen=True)

@@ -89,3 +89,35 @@ class DbService:
                                                 movie.release_date, movie.revenue)
 
         return Movie(**dict(row))
+
+    async def get_movie_actor(self, movie_id: int, actor_id: int):
+        async with self.pool.acquire() as connection:
+            row = await connection.fetchrow('select * from movie_actors where movie_id=$1 and actor_id=$2', movie_id,
+                                            actor_id)
+        return MovieActor(**dict(row)) if row else None
+
+    async def get_movie_actors(self, offset=0, limit=500) -> list[Actor]:
+        async with self.pool.acquire() as connection:
+            rows = await connection.fetch('select * from movie_actors order by name offset $1 limit $2', offset, limit)
+        return [Actor(**dict(r)) for r in rows]
+
+    async def upsert_movie_actor(self, movie_actor: MovieActor) -> MovieActor:
+        if await self.get_movie_actor(movie_actor.movie_id, movie_actor.actor_id) is None:
+            # insert
+            async with self.pool.acquire() as connection:
+                row = await connection.fetchrow(
+                    """insert into movie_actors(cast_id,movie_id,actor_id,credit_id,character,gender,position) 
+                        VALUES ($1,$2, $3, $4, $5, $6, $7) returning *""",
+                    movie_actor.cast_id, movie_actor.movie_id, movie_actor.actor_id, movie_actor.credit_id,
+                    movie_actor.character, movie_actor.gender, movie_actor.position)
+        else:
+            # update
+            async with self.pool.acquire() as connection:
+                row = await connection.fetchrow(
+                    """update movie_actors set 
+                        movie_id=$2, actor_id=$3, credit_id=$4, character=$5, gender=$6, position=$7  
+                        where cast_id=$1 returning *""",
+                    movie_actor.cast_id, movie_actor.movie_id, movie_actor.actor_id, movie_actor.credit_id,
+                    movie_actor.character, movie_actor.gender, movie_actor.position)
+
+        return MovieActor(**dict(row))
