@@ -52,3 +52,40 @@ class DbService:
                                                 actor.actor_id, actor.name)
 
         return Actor(**dict(row))
+
+    async def get_movies(self, offset=0, limit=500) -> list[Movie]:
+        async with self.pool.acquire() as connection:
+            rows = await connection.fetch('select * from movies order by title offset $1 limit $2', offset, limit)
+        return [Movie(**dict(r)) for r in rows]
+
+    async def get_movie(self, movie_id: int):
+        async with self.pool.acquire() as connection:
+            row = await connection.fetchrow('select * from movies where movie_id=$1', movie_id)
+        return Movie(**dict(row)) if row else None
+
+    async def upsert_movie(self, movie: Movie) -> Movie:
+        if movie.movie_id is None:
+            # insert
+            async with self.pool.acquire() as connection:
+                row = await connection.fetchrow(
+                    """insert into movies(title,budget,popularity,release_date,revenue) 
+                        VALUES ($1,$1,$2,$3,$4,$5) returning *""",
+                    movie.title, movie.budget, movie.popularity, movie.release_date, movie.revenue)
+        elif await self.get_movie(movie.movie_id) is None:
+            # insert
+            async with self.pool.acquire() as connection:
+                row = await connection.fetchrow(
+                    """insert into movies(movie_id,title,budget,popularity,release_date,revenue) 
+                    VALUES ($1,$2,$3,$4,$5,$6) returning *""",
+                    movie.movie_id, movie.title, movie.budget, movie.popularity, movie.release_date, movie.revenue)
+        else:
+            # update
+            async with self.pool.acquire() as connection:
+                row = await connection.fetchrow("""update movies set title=$2, budget = $3,
+                                                popularity = $4,
+                                                release_date = $5,
+                                                revenue = $6 where movie_id=$1 returning *""",
+                                                movie.movie_id, movie.title, movie.budget, movie.popularity,
+                                                movie.release_date, movie.revenue)
+
+        return Movie(**dict(row))

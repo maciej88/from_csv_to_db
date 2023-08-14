@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import date
 
 """
 Models to serialize data for import tools and serialize data.
@@ -9,6 +10,10 @@ Models to serialize data for import tools and serialize data.
 class Movie:
     movie_id: int
     title: str
+    budget: int
+    popularity: float
+    release_date: date
+    revenue: int
 
 
 @dataclass
@@ -38,3 +43,14 @@ class CastEntry:
     id: int  # id of ... the actor?
     name: str
     order: int
+
+
+@dataclass
+class Crew:
+    credit_id: str  # unique
+    movie_id: int   # credit_id → (single, unique) movie_id ---> *:1 relation (no need for join-table)
+    department: str
+    gender: int
+    id: int  # id of ... the person?
+    job: str
+    name: str
